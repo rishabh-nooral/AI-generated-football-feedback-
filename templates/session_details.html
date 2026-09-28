@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Session Details</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        .action-column {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
+            margin-top: 10px !important;
+            width: 100% !important;
+        }
+
+        .action-column button,
+        .action-column a {
+            display: block !important;
+            width: fit-content !important;
+            margin: 0 !important;
+        }
+
+        .history-link {
+            color: #0066ff !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            cursor: pointer;
+        }
+
+        .history-link:hover {
+            color: #004dcc !important;
+            text-decoration: underline !important;
+        }
+
+        .pdf-download-button {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+
+        .pdf-download-button:hover {
+            background: #111111 !important;
+            color: #ffffff !important;
+        }
+
+        .voice-status {
+            display: none;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .voice-status.available {
+            display: block;
+            color: #008000;
+        }
+
+        .voice-status.unavailable {
+            display: block;
+            color: #d00000;
+        }
+
+        .voice-status.blocked {
+            display: block;
+            color: #d00000;
+        }
+
+        .session-section + .session-section {
+            margin-top: 36px;
+            padding-top: 28px;
+            border-top: 1px solid #d7e4dc;
+        }
+
+        .match-statistics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .match-statistics-table th,
+        .match-statistics-table td {
+            padding: 12px 10px;
+            border: 1px solid #d7e4dc;
+            text-align: left;
+        }
+
+        .match-statistics-table th {
+            background: #eef6f1;
+            color: #12372a;
+        }
+
+        .match-statistics-table tr:nth-child(even) {
+            background: #f8fbf9;
+        }
+
+        @media (max-width: 700px) {
+            .match-statistics-table {
+                font-size: 13px;
+            }
+
+            .match-statistics-table th,
+            .match-statistics-table td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1 id="pageTitle">Session Details</h1>
+
+        <!-- TEAM OBSERVATION -->
+        <section class="session-section">
+
+            <h2>Team Observation</h2>
+
+            <textarea
+                id="teamObservation"
+                rows="5"
+                placeholder="Enter team observation..."
+            ></textarea>
+
+            <div class="action-column">
+
+                <button id="voiceTeamButton">
+                    🎤 Voice Input
+                </button>
+
+                <div
+                    id="teamVoiceStatus"
+                    class="voice-status"
+                ></div>
+
+                <button id="saveTeamObservationButton">
+                    Save Team Observation
+                </button>
+
+                <a
+                    id="teamObservationHistoryLink"
+                    class="history-link"
+                    href="#"
+                >
+                    View Team Observation History
+                </a>
+
+                <button id="generateTeamSummaryButton">
+                    Generate Team AI Report
+                </button>
+
+                <a
+                    id="teamSummaryHistoryLink"
+                    href="#"
+                >
+                    View Team AI Report History
+                </a>
+
+                <button
+                    id="downloadTeamSummaryPdfButton"
+                    class="pdf-download-button"
+                >
+                    Download Team AI Report PDF
+                </button>
+
+            </div>
+
+            <div
+                id="teamSummaryResult"
+                style="display:none;"
+            ></div>
+
+        </section>
+
+
+        <!-- PLAYERS -->
+        <section class="session-section">
+
+            <h2>Player Feedback</h2>
+
+            <div id="playersContainer"></div>
+
+        </section>
+
+
+        <!-- MATCH STATISTICS -->
+        <section
+            id="matchStatisticsSection"
+            class="session-section"
+            style="display:none;"
+        >
+
+            <h2>Match Statistics</h2>
+
+            <table class="match-statistics-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Position</th>
+                        <th>Goals</th>
+                        <th>Yellow Cards</th>
+                        <th>Red Cards</th>
+                        <th>Minutes Played</th>
+                    </tr>
+                </thead>
+                <tbody id="matchStatisticsBody"></tbody>
+            </table>
+
+        </section>
+
+
+        <!-- MATCH EVENTS -->
+        <section class="session-section">
+
+            <div class="action-column">
+
+                <button
+                    id="matchEventsButton"
+                    style="display:none;"
+                >
+                    Match Statistics & Events
+                </button>
+
+                <button id="backToTeamButton">
+                    Back to Team
+                </button>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    const pathParts = window.location.pathname.split("/");
+
+    const teamId = pathParts[2];
+    const sessionId = pathParts[4];
+
+    const pageTitle =
+        document.getElementById("pageTitle");
+
+    const teamObservation =
+        document.getElementById("teamObservation");
+
+    const playersContainer =
+        document.getElementById("playersContainer");
+
+    const voiceTeamButton =
+        document.getElementById("voiceTeamButton");
+
+    const teamVoiceStatus =
+        document.getElementById("teamVoiceStatus");
+
+    const saveTeamObservationButton =
+        document.getElementById(
+            "saveTeamObservationButton"
+        );
+
+    const teamObservationHistoryLink =
+        document.getElementById(
+            "teamObservationHistoryLink"
+        );
+
+    const generateTeamSummaryButton =
+        document.getElementById(
+            "generateTeamSummaryButton"
+        );
+
+    const teamSummaryHistoryLink =
+        document.getElementById(
+            "teamSummaryHistoryLink"
+        );
+
+    const downloadTeamSummaryPdfButton =
+        document.getElementById(
+            "downloadTeamSummaryPdfButton"
+        );
+
+    const matchEventsButton =
+        document.getElementById(
+            "matchEventsButton"
+        );
+
+    const backToTeamButton =
+        document.getElementById(
+            "backToTeamButton"
+        );
+
+    const matchStatisticsSection =
+        document.getElementById(
+            "matchStatisticsSection"
+        );
+
+    const matchStatisticsBody =
+        document.getElementById(
+            "matchStatisticsBody"
+        );
+
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function formatAIText(value) {
+
+        if (!value) {
+            return "";
+        }
+
+        return escapeHtml(value)
+            .replace(/\n/g, "<br>");
+    }
+
+
+    /*
+     * VOICE INPUT
+     *
+     * This function:
+     * 1. Checks browser speech recognition support.
+     * 2. Checks microphone permission.
+     * 3. Starts listening.
+     * 4. Changes button to STOP.
+     * 5. Places transcript inside textarea.
+     * 6. Allows coach to edit before saving.
+     */
+
+    async function checkMicrophonePermission() {
+
+        if (!navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia) {
+
+            return {
+                status: "unavailable"
+            };
+        }
+
+
+        try {
+
+            const permission =
+                await navigator.permissions.query({
+                    name: "microphone"
+                });
+
+            if (permission.state === "denied") {
+
+                return {
+                    status: "blocked"
+                };
+            }
+
+            if (permission.state === "granted") {
+
+                return {
+                    status: "available"
+                };
+            }
+
+            /*
+             * Permission is "prompt".
+             * Ask browser for microphone permission.
+             */
+
+            const stream =
+                await navigator.mediaDevices.getUserMedia({
+                    audio: true
+                });
+
+
+            stream.getTracks().forEach(function (track) {
+                track.stop();
+            });
+
+
+            return {
+                status: "available"
+            };
+
+        }
+        catch (error) {
+
+            console.error(
+                "Microphone permission error:",
+                error
+            );
+
+
+            if (
+                error.name === "NotAllowedError" ||
+                error.name === "PermissionDeniedError"
+            ) {
+
+                return {
+                    status: "blocked"
+                };
+            }
+
+
+            if (
+                error.name === "NotFoundError" ||
+                error.name === "DevicesNotFoundError"
+            ) {
+
+                return {
+                    status: "unavailable"
+                };
+            }
+
+
+            return {
+                status: "unavailable"
+            };
+        }
+    }
+
+
+    function setVoiceStatus(
+        statusElement,
+        message,
+        type
+    ) {
+
+        if (!statusElement) {
+            return;
+        }
+
+        statusElement.textContent =
+            message;
+
+        statusElement.className =
+            "voice-status " + type;
+
+    }
+
+
+    async function startVoiceInput(
+        textarea,
+        button,
+        statusElement
+    ) {
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+
+        /*
+         * Check whether browser supports
+         * speech recognition.
+         */
+
+        if (!SpeechRecognition) {
+
+            setVoiceStatus(
+                statusElement,
+                "Microphone unavailable — speech recognition is not supported by this browser.",
+                "unavailable"
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Check microphone permission.
+         */
+
+        const microphone =
+            await checkMicrophonePermission();
+
+
+        if (microphone.status === "blocked") {
+
+            setVoiceStatus(
+                statusElement,
+                "Microphone blocked by browser — microphone permission is required.",
+                "blocked"
+            );
+
+            return;
+        }
+
+
+        if (microphone.status === "unavailable") {
+
+            setVoiceStatus(
+                statusElement,
+                "Microphone unavailable.",
+                "unavailable"
+            );
+
+            return;
+        }
+
+
+        setVoiceStatus(
+            statusElement,
+            "",
+            ""
+        );
+
+
+        const recognition =
+            new SpeechRecognition();
+
+
+        recognition.lang =
+            "en-IN";
+
+        recognition.interimResults =
+            false;
+
+        recognition.continuous =
+            true;
+
+        recognition.maxAlternatives =
+            1;
+
+
+        /*
+         * Store recognition instance
+         * on the button.
+         */
+
+        button._recognition =
+            recognition;
+
+        button._isListening =
+            true;
+
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "⏹ Stop Voice Input";
+
+
+        setVoiceStatus(
+            statusElement,
+            "Listening... Speak now.",
+            "available"
+        );
+
+
+        try {
+
+            recognition.start();
+
+        }
+        catch (error) {
+
+            console.error(
+                "Speech recognition start error:",
+                error
+            );
+
+            button._isListening =
+                false;
+
+            button._recognition =
+                null;
+
+            button.textContent =
+                "🎤 Voice Input";
+
+            setVoiceStatus(
+                statusElement,
+                "Microphone unavailable.",
+                "unavailable"
+            );
+
+            return;
+        }
+
+
+        recognition.onresult =
+            function (event) {
+
+                let transcript = "";
+
+
+                for (
+                    let i = event.resultIndex;
+                    i < event.results.length;
+                    i++
+                ) {
+
+                    transcript +=
+                        event.results[i][0].transcript + " ";
+
+                }
+
+
+                transcript =
+                    transcript.trim();
+
+
+                if (transcript) {
+
+                    /*
+                     * Put recognized speech
+                     * directly into textarea.
+                     *
+                     * Existing text is preserved.
+                     */
+
+                    if (textarea.value.trim()) {
+
+                        textarea.value =
+                            textarea.value.trim() +
+                            " " +
+                            transcript;
+
+                    }
+                    else {
+
+                        textarea.value =
+                            transcript;
+
+                    }
+
+                }
+
+            };
+
+
+        recognition.onerror =
+            function (event) {
+
+                console.error(
+                    "Speech recognition error:",
+                    event.error
+                );
+
+
+                if (
+                    event.error === "not-allowed" ||
+                    event.error === "service-not-allowed"
+                ) {
+
+                    setVoiceStatus(
+                        statusElement,
+                        "Microphone blocked by browser — microphone permission is required.",
+                        "blocked"
+                    );
+
+                }
+                else if (
+                    event.error === "audio-capture"
+                ) {
+
+                    setVoiceStatus(
+                        statusElement,
+                        "Microphone unavailable.",
+                        "unavailable"
+                    );
+
+                }
+                else {
+
+                    setVoiceStatus(
+                        statusElement,
+                        "Voice input error. Please try again.",
+                        "unavailable"
+                    );
+
+                }
+
+
+                stopVoiceInput(
+                    button,
+                    statusElement
+                );
+
+            };
+
+
+        recognition.onend =
+            function () {
+
+                /*
+                 * If the coach manually stopped,
+                 * do not restart.
+                 */
+
+                if (button._isListening) {
+
+                    /*
+                     * Browser may automatically end
+                     * recognition. Restart while the
+                     * coach still wants voice input.
+                     */
+
+                    try {
+
+                        recognition.start();
+
+                    }
+                    catch (error) {
+
+                        button._isListening =
+                            false;
+
+                        button._recognition =
+                            null;
+
+                        button.textContent =
+                            "🎤 Voice Input";
+
+                    }
+
+                }
+                else {
+
+                    button.textContent =
+                        "🎤 Voice Input";
+
+                }
+
+            };
+
+    }
+
+
+    function stopVoiceInput(
+        button,
+        statusElement
+    ) {
+
+        button._isListening =
+            false;
+
+
+        const recognition =
+            button._recognition;
+
+
+        if (recognition) {
+
+            try {
+
+                recognition.stop();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Error stopping voice input:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        button._recognition =
+            null;
+
+        button.textContent =
+            "🎤 Voice Input";
+
+
+        if (
+            statusElement &&
+            statusElement.textContent ===
+            "Listening... Speak now."
+        ) {
+
+            setVoiceStatus(
+                statusElement,
+                "Voice input stopped. You can edit the text before saving.",
+                "available"
+            );
+
+        }
+
+    }
+
+
+    async function handleVoiceButton(
+        textarea,
+        button,
+        statusElement
+    ) {
+
+        /*
+         * If already listening,
+         * clicking button stops it.
+         */
+
+        if (button._isListening) {
+
+            stopVoiceInput(
+                button,
+                statusElement
+            );
+
+            return;
+        }
+
+
+        await startVoiceInput(
+            textarea,
+            button,
+            statusElement
+        );
+
+    }
+
+
+    async function loadSessionDetails() {
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/team/${teamId}/session/${sessionId}/details`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const team =
+                data.team || {};
+
+            const session =
+                data.session || {};
+
+
+            pageTitle.textContent =
+                `${session.session_type || "Session"} - ${team.team_name || "Team"}`;
+
+
+            teamObservation.value =
+                data.team_observation || "";
+
+
+            teamObservationHistoryLink.href =
+                `/team/${teamId}/session/${sessionId}/team-observation-history/view`;
+
+
+            teamSummaryHistoryLink.href =
+                `/team/${teamId}/session/${sessionId}/team-summary-history`;
+
+
+            downloadTeamSummaryPdfButton.onclick =
+                function () {
+
+                    window.location.href =
+                        `/team/${teamId}/session/${sessionId}/download-team-summary-pdf`;
+
+                };
+
+
+            matchEventsButton.onclick =
+                function () {
+
+                    window.location.href =
+                        `/team/${teamId}/session/${sessionId}/match-events`;
+
+                };
+
+
+            backToTeamButton.onclick =
+                function () {
+
+                    window.location.href =
+                        `/team/${teamId}`;
+
+                };
+
+
+            const players =
+                data.players || [];
+
+
+            if (
+                String(session.session_type || "").toLowerCase() ===
+                "match"
+            ) {
+
+                matchEventsButton.style.display =
+                    "block";
+
+                matchStatisticsBody.innerHTML =
+                    players.map(function (player) {
+
+                        const stats =
+                            (data.stats_map || {})[String(player.player_id)] || {};
+
+                        return `
+                            <tr>
+                                <td>${escapeHtml(player.player_name || "")}</td>
+                                <td>${escapeHtml(player.position || "")}</td>
+                                <td>${escapeHtml(stats.goals ?? 0)}</td>
+                                <td>${escapeHtml(stats.yellow_cards ?? 0)}</td>
+                                <td>${escapeHtml(stats.red_cards ?? 0)}</td>
+                                <td>${escapeHtml(stats.minutes_played ?? 0)}</td>
+                            </tr>
+                        `;
+
+                    }).join("");
+
+                matchStatisticsSection.style.display =
+                    "block";
+
+            }
+
+
+            playersContainer.innerHTML =
+                "";
+
+
+            players.forEach(
+                function (player, index) {
+
+                    if (
+                        player.is_substitute &&
+                        (index === 0 || !players[index - 1].is_substitute)
+                    ) {
+                        const substituteHeading =
+                            document.createElement("h2");
+
+                        substituteHeading.textContent =
+                            "Substitute Players";
+
+                        playersContainer.appendChild(
+                            substituteHeading
+                        );
+                    }
+
+                    const playerId =
+                        player.player_id ||
+                        player.id;
+
+
+                    const playerName =
+                        player.player_name ||
+                        player.name ||
+                        player.full_name ||
+                        "Unknown Player";
+
+
+                    const position =
+                        player.position || "";
+
+
+                    const jerseyNumber =
+                        player.jersey_number ??
+                        player.jersey_no ??
+                        "";
+
+
+                    const currentObservation =
+                        (data.observation_map || {})[String(playerId)] ||
+                        "";
+
+
+                    const card =
+                        document.createElement("div");
+
+
+                    card.className =
+                        "player-card";
+
+
+                    card.innerHTML = `
+
+                        <h3>
+                            ${escapeHtml(playerName)}
+                            — ${escapeHtml(position)}
+                            (#${escapeHtml(jerseyNumber)})
+                        </h3>
+
+                        <label>
+                            Coach Observation
+                        </label>
+
+                        <textarea
+                            class="player-observation"
+                            data-player-id="${playerId}"
+                            rows="5"
+                            placeholder="Enter player observation..."
+                        >${escapeHtml(currentObservation)}</textarea>
+
+
+                        <div class="action-column">
+
+                            <button
+                                class="voice-player-button"
+                                data-player-id="${playerId}"
+                            >
+                                🎤 Voice Input
+                            </button>
+
+                            <div
+                                class="voice-status player-voice-status"
+                                data-player-id="${playerId}"
+                            ></div>
+
+                            <button
+                                class="save-observation-button"
+                                data-player-id="${playerId}"
+                            >
+                                Save Observation
+                            </button>
+
+                            <a
+                                class="history-link observation-history-link"
+                                data-player-id="${playerId}"
+                                href="#"
+                            >
+                                View Observation History
+                            </a>
+
+                            <button
+                                class="generate-feedback-button"
+                                data-player-id="${playerId}"
+                            >
+                                Generate AI Feedback
+                            </button>
+
+                            <a
+                                class="feedback-history-link"
+                                data-player-id="${playerId}"
+                                href="#"
+                            >
+                                View AI Feedback History
+                            </a>
+
+                            <button
+                                class="pdf-download-button download-feedback-button"
+                                data-player-id="${playerId}"
+                            >
+                                Download AI Feedback PDF
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="player-feedback-result"
+                            data-player-id="${playerId}"
+                            style="display:none;"
+                        ></div>
+                    `;
+
+
+                    playersContainer.appendChild(card);
+
+                }
+            );
+
+
+            attachPlayerEvents();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Error loading session details:",
+                error
+            );
+
+
+            playersContainer.innerHTML =
+                `<p>Unable to load session details.</p>`;
+
+        }
+
+    }
+
+
+    function attachPlayerEvents() {
+
+        document
+            .querySelectorAll(
+                ".observation-history-link"
+            )
+            .forEach(
+                function (link) {
+
+                    const playerId =
+                        link.dataset.playerId;
+
+
+                    link.href =
+                        `/team/${teamId}/session/${sessionId}/player/${playerId}/observation-history/view`;
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".feedback-history-link"
+            )
+            .forEach(
+                function (link) {
+
+                    const playerId =
+                        link.dataset.playerId;
+
+
+                    link.href =
+                        `/team/${teamId}/session/${sessionId}/player/${playerId}/feedback-history`;
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".download-feedback-button"
+            )
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            const playerId =
+                                button.dataset.playerId;
+
+
+                            window.location.href =
+                                `/team/${teamId}/session/${sessionId}/player/${playerId}/download-feedback-pdf`;
+
+                        }
+                    );
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".save-observation-button"
+            )
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        async function () {
+
+                            const playerId =
+                                button.dataset.playerId;
+
+
+                            const textarea =
+                                document.querySelector(
+                                    `.player-observation[data-player-id="${playerId}"]`
+                                );
+
+
+                            const observation =
+                                textarea.value.trim();
+
+
+                            try {
+
+                                const response =
+                                    await fetch(
+                                        `/team/${teamId}/session/${sessionId}/save-player-observation`,
+                                        {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type":
+                                                    "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                player_id:
+                                                    playerId,
+                                                coach_observation:
+                                                    observation
+                                            })
+                                        }
+                                    );
+
+
+                                const result =
+                                    await response.json();
+
+
+                                if (!response.ok) {
+
+                                    alert(
+                                        result.error ||
+                                        "Unable to save observation."
+                                    );
+
+                                    return;
+
+                                }
+
+
+                                alert(
+                                    result.message ||
+                                    "Observation saved successfully."
+                                );
+
+                            }
+
+                            catch (error) {
+
+                                console.error(error);
+
+                                alert(
+                                    "Error saving observation."
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".generate-feedback-button"
+            )
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        async function () {
+
+                            const playerId =
+                                button.dataset.playerId;
+
+
+                            const textarea =
+                                document.querySelector(
+                                    `.player-observation[data-player-id="${playerId}"]`
+                                );
+
+
+                            const resultBox =
+                                document.querySelector(
+                                    `.player-feedback-result[data-player-id="${playerId}"]`
+                                );
+
+
+                            const observation =
+                                textarea.value.trim();
+
+
+                            if (!observation) {
+
+                                alert(
+                                    "Please enter and save an observation first."
+                                );
+
+                                return;
+
+                            }
+
+
+                            button.disabled =
+                                true;
+
+                            button.textContent =
+                                "Generating...";
+
+
+                            try {
+
+                                const response =
+                                    await fetch(
+                                        "/generate-feedback",
+                                        {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type":
+                                                    "application/json"
+                                            },
+                                            body: JSON.stringify({
+                                                team_id:
+                                                    teamId,
+                                                session_id:
+                                                    sessionId,
+                                                player_id:
+                                                    playerId
+                                            })
+                                        }
+                                    );
+
+
+                                const result =
+                                    await response.json();
+
+
+                                if (!response.ok) {
+
+                                    alert(
+                                        result.message ||
+                                        result.error ||
+                                        "Unable to generate feedback."
+                                    );
+
+                                    return;
+
+                                }
+
+
+                                resultBox.style.display =
+                                    "block";
+
+
+                                resultBox.innerHTML =
+                                    formatAIText(
+                                        result.feedback ||
+                                        result.ai_feedback ||
+                                        ""
+                                    );
+
+                            }
+
+                            catch (error) {
+
+                                console.error(error);
+
+                                alert(
+                                    "Error generating AI feedback."
+                                );
+
+                            }
+
+                            finally {
+
+                                button.disabled =
+                                    false;
+
+                                button.textContent =
+                                    "Generate AI Feedback";
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /*
+         * PLAYER VOICE INPUT
+         */
+
+        document
+            .querySelectorAll(
+                ".voice-player-button"
+            )
+            .forEach(
+                function (button) {
+
+                    button.addEventListener(
+                        "click",
+                        async function () {
+
+                            const playerId =
+                                button.dataset.playerId;
+
+
+                            const textarea =
+                                document.querySelector(
+                                    `.player-observation[data-player-id="${playerId}"]`
+                                );
+
+
+                            const statusElement =
+                                document.querySelector(
+                                    `.player-voice-status[data-player-id="${playerId}"]`
+                                );
+
+
+                            await handleVoiceButton(
+                                textarea,
+                                button,
+                                statusElement
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+
+    /*
+     * TEAM VOICE INPUT
+     */
+
+    voiceTeamButton.addEventListener(
+        "click",
+        async function () {
+
+            await handleVoiceButton(
+                teamObservation,
+                voiceTeamButton,
+                teamVoiceStatus
+            );
+
+        }
+    );
+
+
+    /*
+     * SAVE TEAM OBSERVATION
+     */
+
+    saveTeamObservationButton.addEventListener(
+        "click",
+        async function () {
+
+            const observation =
+                teamObservation.value.trim();
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/team/${teamId}/session/${sessionId}/team-observation`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body: JSON.stringify({
+                                team_observation:
+                                    observation
+                            })
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        result.error ||
+                        "Unable to save team observation."
+                    );
+
+                    return;
+
+                }
+
+
+                alert(
+                    result.message ||
+                    "Team observation saved successfully."
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Error saving team observation."
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+     * GENERATE TEAM AI REPORT
+     */
+
+    generateTeamSummaryButton.addEventListener(
+        "click",
+        async function () {
+
+            const resultBox =
+                document.getElementById(
+                    "teamSummaryResult"
+                );
+
+
+            generateTeamSummaryButton.disabled =
+                true;
+
+            generateTeamSummaryButton.textContent =
+                "Generating...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/generate-team-summary",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body: JSON.stringify({
+                                team_id:
+                                    teamId,
+                                session_id:
+                                    sessionId
+                            })
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                                        result.message ||
+                                        result.error ||
+                        "Unable to generate team AI report."
+                    );
+
+                    return;
+
+                }
+
+
+                resultBox.style.display =
+                    "block";
+
+
+                resultBox.innerHTML =
+                    formatAIText(
+                        result.summary ||
+                        result.team_summary ||
+                        result.report ||
+                        ""
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Error generating team AI report."
+                );
+
+            }
+
+            finally {
+
+                generateTeamSummaryButton.disabled =
+                    false;
+
+                generateTeamSummaryButton.textContent =
+                    "Generate Team AI Report";
+
+            }
+
+        }
+    );
+
+
+    /*
+     * LOAD PAGE
+     */
+
+    loadSessionDetails();
+
+});
+
+</script>
+
+</body>
+</html>

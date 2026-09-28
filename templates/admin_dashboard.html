@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI Football Coach</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <main class="admin-shell">
+        <header class="admin-header">
+            <div>
+                <p class="eyebrow">AI Football Coach</p>
+                <h1>Admin dashboard</h1>
+                <p class="subtitle">Platform overview and activity totals</p>
+            </div>
+            <a class="logout-link" href="{{ url_for('logout') }}">Log out</a>
+        </header>
+
+        <section class="metrics-grid" aria-label="Platform totals">
+            <article class="metric-card"><span>Users</span><strong id="user-count">{{ dashboard.user_count }}</strong></article>
+            <article class="metric-card"><span>Teams</span><strong id="team-count">{{ dashboard.team_count }}</strong></article>
+            <article class="metric-card"><span>AI reports generated</span><strong id="report-count">{{ dashboard.report_count }}</strong></article>
+            <article class="metric-card"><span>AI reports downloaded</span><strong id="download-count">{{ dashboard.download_count }}</strong></article>
+        </section>
+
+        <section class="teams-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Organisation</p>
+                    <h2>Users</h2>
+                </div>
+                <span class="live-status"><i></i> Live totals</span>
+            </div>
+            <div id="users-list" class="teams-list">
+                {% for user in dashboard.users %}
+                <a class="team-row user-row" href="{{ url_for('admin_user_details', user_id=user.user_id) }}">
+                    <span>{{ user.username }}{% if not user.is_active %} <em class="user-status">Passive user</em>{% endif %}</span>
+                    <strong>Open details</strong>
+                </a>
+                {% else %}
+                <p class="empty-state">No users have registered yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function updateDashboard(data) {
+            document.getElementById("user-count").textContent = data.user_count;
+            document.getElementById("team-count").textContent = data.team_count;
+            document.getElementById("report-count").textContent = data.report_count;
+            document.getElementById("download-count").textContent = data.download_count;
+
+            const usersList = document.getElementById("users-list");
+            usersList.innerHTML = data.users.length
+                ? data.users.map(user => `
+                    <a class="team-row user-row" href="/admin/user/${user.user_id}">
+                        <span>${user.username}${user.is_active ? "" : " <em class=\"user-status\">Passive user</em>"}</span>
+                        <strong>Open details</strong>
+                    </a>`).join("")
+                : '<p class="empty-state">No users have registered yet.</p>';
+        }
+
+        async function refreshDashboard() {
+            try {
+                const response = await fetch("{{ url_for('admin_dashboard_data') }}", { cache: "no-store" });
+                if (response.ok) updateDashboard(await response.json());
+            } catch (error) {
+                // Keep the last successful totals visible during a brief connection issue.
+            }
+        }
+
+        setInterval(refreshDashboard, 5000);
+    </script>
+</body>
+</html>

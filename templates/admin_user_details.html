@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }} - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <main class="admin-shell">
+        <header class="admin-header">
+            <div>
+                <a class="back-link" href="{{ url_for('admin_dashboard') }}">Back to dashboard</a>
+                <p class="eyebrow">User detail</p>
+                <h1>{{ user.username }}</h1>
+                <p class="subtitle">{{ teams|length }} team{% if teams|length != 1 %}s{% endif %} · {% if user.is_active %}Active user{% else %}Passive user{% endif %}</p>
+            </div>
+            <a class="logout-link" href="{{ url_for('logout') }}">Log out</a>
+        </header>
+
+        {% if not user.is_active %}
+        <section class="danger-section">
+            <div>
+                <p class="eyebrow">Permanent action</p>
+                <h2>Remove this passive user</h2>
+                <p>This permanently deletes the account, password, teams, sessions, and related reports. The username can then be registered again.</p>
+            </div>
+            <form method="post" action="{{ url_for('admin_delete_user', user_id=user.user_id) }}" onsubmit="return confirm('Permanently delete this passive user and all of their data? This cannot be undone.');">
+                <button class="danger-button" type="submit">Delete permanently</button>
+            </form>
+        </section>
+        {% endif %}
+
+        <section class="teams-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">User activity</p>
+                    <h2>Teams and sessions</h2>
+                </div>
+            </div>
+            <div class="user-teams">
+                {% for team in teams %}
+                <article class="user-team-card">
+                    <div class="team-card-heading">
+                        <h3>{{ team.team_name }}</h3>
+                        <span>{{ team.session_count }} total session{% if team.session_count != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="team-stats">
+                        <span>AI generated <strong>{{ team.report_count }}</strong></span>
+                        <span>AI downloaded <strong>{{ team.download_count }}</strong></span>
+                    </div>
+                    <div class="session-breakdown">
+                        {% for session in team.sessions %}
+                        <div class="session-type">
+                            <span>{{ session.session_type }}</span>
+                            <strong>{{ session.session_count }}</strong>
+                        </div>
+                        {% else %}
+                        <p class="empty-state">No sessions yet.</p>
+                        {% endfor %}
+                    </div>
+                </article>
+                {% else %}
+                <p class="empty-state">This user has no teams yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Replacement Player</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Add Replacement Player</h1>
+
+        <h2>{{ team["team_name"] }}</h2>
+
+
+        <!-- ================================================= -->
+        <!-- ERROR MESSAGE -->
+        <!-- ================================================= -->
+
+        {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- NO MISSING POSITIONS -->
+        <!-- ================================================= -->
+
+        {% if not missing_positions %}
+
+        <p>
+            There are currently no missing positions.
+            All required positions are already occupied.
+        </p>
+
+        {% else %}
+
+
+        <!-- ================================================= -->
+        <!-- REPLACEMENT PLAYER FORM -->
+        <!-- ================================================= -->
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'add_replacement',
+                team_id=team['team_id']
+            ) }}"
+        >
+
+            <!-- ============================================= -->
+            <!-- PLAYER NAME -->
+            <!-- ============================================= -->
+
+            <label>
+                Player Name
+            </label>
+
+            <input
+                type="text"
+                name="player_name"
+                placeholder="Enter player name"
+                required
+            >
+
+
+            <!-- ============================================= -->
+            <!-- JERSEY NUMBER -->
+            <!-- ============================================= -->
+
+            <label>
+                Jersey Number
+            </label>
+
+            <input
+                type="number"
+                name="jersey_number"
+                min="1"
+                max="99"
+                placeholder="Enter jersey number"
+                required
+            >
+
+
+            <!-- ============================================= -->
+            <!-- POSITION DROPDOWN -->
+            <!-- ============================================= -->
+
+            <label>
+                Position
+            </label>
+
+            <select
+                name="position"
+                required
+            >
+
+                <option
+                    value=""
+                    disabled
+                    selected
+                >
+                    Select missing position
+                </option>
+
+                {% for position in missing_positions %}
+
+                <option value="{{ position }}">
+                    {{ position }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <p>
+                Only positions that are currently missing
+                from the team are available.
+            </p>
+
+
+            <!-- ============================================= -->
+            <!-- SUBMIT -->
+            <!-- ============================================= -->
+
+            <button type="submit">
+                Add Replacement Player
+            </button>
+
+        </form>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- BACK TO TEAM -->
+        <!-- ================================================= -->
+
+        <br>
+
+        <a
+            href="{{ url_for(
+                'team_dashboard',
+                team_id=team['team_id']
+            ) }}"
+        >
+            Back to Team
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Match Events</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Match Events</h1>
+
+        <h2>{{ team["team_name"] }}</h2>
+
+        <p>
+            <strong>Date:</strong>
+            {{ session["session_date"] }}
+        </p>
+
+        <p>
+            <strong>Opponent:</strong>
+            {{ session["opponent"] }}
+        </p>
+
+
+        {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <!-- ========================================= -->
+        <!-- PLAYER STATISTICS -->
+        <!-- ========================================= -->
+
+        <h2>Player Statistics</h2>
+
+        <p>
+            Enter the match statistics for each player.
+        </p>
+
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'match_events',
+                team_id=team['team_id'],
+                session_id=session['session_id']
+            ) }}"
+        >
+
+            {% for player in players %}
+
+            {% set stat = stats_map.get(player["player_id"]) %}
+
+            <div class="player-card">
+
+                <h3>
+                    #{{ player["jersey_number"] }}
+                    {{ player["player_name"] }}
+                </h3>
+
+                <p>
+                    <strong>Registered Position:</strong>
+                    {{ player["position"] }}
+                </p>
+
+
+                <label>
+                    Goals
+                </label>
+
+                <input
+                    type="number"
+                    name="goals_{{ player['player_id'] }}"
+                    min="0"
+                    value="{% if stat %}{{ stat['goals'] }}{% else %}0{% endif %}"
+                >
+
+
+                <label>
+                    Yellow Cards
+                </label>
+
+                <input
+                    type="number"
+                    name="yellow_cards_{{ player['player_id'] }}"
+                    min="0"
+                    value="{% if stat %}{{ stat['yellow_cards'] }}{% else %}0{% endif %}"
+                >
+
+
+                <label>
+                    Red Cards
+                </label>
+
+                <input
+                    type="number"
+                    name="red_cards_{{ player['player_id'] }}"
+                    min="0"
+                    value="{% if stat %}{{ stat['red_cards'] }}{% else %}0{% endif %}"
+                >
+
+
+                <label>
+                    Minutes Played
+                </label>
+
+                <input
+                    type="number"
+                    name="minutes_played_{{ player['player_id'] }}"
+                    min="0"
+                    max="120"
+                    value="{% if stat %}{{ stat['minutes_played'] }}{% else %}0{% endif %}"
+                >
+
+            </div>
+
+            {% endfor %}
+
+
+            <!-- ========================================= -->
+            <!-- SUBSTITUTIONS -->
+            <!-- ========================================= -->
+
+            <hr>
+
+            <h2>Substitutions</h2>
+
+            <p>
+                Add substitutions made during the match.
+            </p>
+
+            <p>
+                The incoming player will take the
+                outgoing player's position for this match.
+            </p>
+
+
+            <div id="substitutionsContainer"></div>
+
+
+            <input
+                type="hidden"
+                name="substitution_count"
+                id="substitution_count"
+                value="0"
+            >
+
+
+            <button
+                type="button"
+                id="addSubstitutionButton"
+            >
+                + Add Substitution
+            </button>
+
+
+            <br>
+            <br>
+
+
+            <button type="submit">
+                Save Match Events
+            </button>
+
+        </form>
+
+
+        <!-- ========================================= -->
+        <!-- SAVED SUBSTITUTIONS -->
+        <!-- ========================================= -->
+
+        <hr>
+
+        <h2>Saved Substitutions</h2>
+
+
+        {% if substitutions %}
+
+            {% for substitution in substitutions %}
+
+            <div class="player-card">
+
+                <h3>
+
+                    #{{ substitution["player_out_jersey"] }}
+
+                    {{ substitution["player_out_name"] }}
+
+                    →
+
+                    #{{ substitution["player_in_jersey"] }}
+
+                    {{ substitution["player_in_name"] }}
+
+                </h3>
+
+
+                {% if substitution["substitution_minute"] %}
+
+                <p>
+
+                    <strong>Minute:</strong>
+
+                    {{ substitution["substitution_minute"] }}
+
+                </p>
+
+                {% endif %}
+
+
+                <p>
+
+                    <strong>
+                        Position in this match:
+                    </strong>
+
+                    {{ substitution["position_at_substitution"] }}
+
+                </p>
+
+
+                <p>
+                    The incoming player's registered
+                    squad position remains unchanged.
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+        <p>
+            No substitutions recorded yet.
+        </p>
+
+        {% endif %}
+
+
+        <br>
+
+
+        <a
+            href="{{ url_for(
+                'session_details',
+                team_id=team['team_id'],
+                session_id=session['session_id']
+            ) }}"
+        >
+            Back to Session
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- PLAYER DATA FOR JAVASCRIPT -->
+<!-- ========================================= -->
+
+<div id="playerData" style="display: none;">
+
+    {% for player in players %}
+
+    <div
+        class="player-data"
+        data-id="{{ player['player_id'] }}"
+        data-name="{{ player['player_name'] }}"
+        data-jersey="{{ player['jersey_number'] }}"
+        data-position="{{ player['position'] }}"
+    ></div>
+
+    {% endfor %}
+
+</div>
+
+
+<script>
+
+let substitutionCount = 0;
+
+
+/* =========================================
+   GET PLAYER DATA
+   ========================================= */
+
+const playerElements =
+    document.querySelectorAll(".player-data");
+
+
+const players = [];
+
+
+playerElements.forEach(function(element) {
+
+    players.push({
+
+        id: element.dataset.id,
+
+        name: element.dataset.name,
+
+        jersey: element.dataset.jersey,
+
+        position: element.dataset.position
+
+    });
+
+});
+
+
+/* =========================================
+   ADD SUBSTITUTION
+   ========================================= */
+
+function addSubstitution() {
+
+    if (substitutionCount >= 5) {
+        alert("A match can have a maximum of 5 substitutions.");
+        return;
+    }
+
+    substitutionCount =
+        substitutionCount + 1;
+
+
+    document.getElementById(
+        "substitution_count"
+    ).value = substitutionCount;
+
+
+    const container =
+        document.getElementById(
+            "substitutionsContainer"
+        );
+
+
+    const box =
+        document.createElement("div");
+
+
+    box.className =
+        "player-card";
+
+
+    /* =====================================
+       TITLE
+       ===================================== */
+
+    const title =
+        document.createElement("h3");
+
+
+    title.textContent =
+        "Substitution " +
+        substitutionCount;
+
+
+    box.appendChild(title);
+
+
+    /* =====================================
+       PLAYER OUT LABEL
+       ===================================== */
+
+    const outLabel =
+        document.createElement("label");
+
+    outLabel.textContent =
+        "Player OUT";
+
+    box.appendChild(outLabel);
+
+    const outSelect =
+        document.createElement("select");
+
+    outSelect.name =
+        "player_out_" +
+        substitutionCount;
+
+    outSelect.required = true;
+
+    const outDefault =
+        document.createElement("option");
+
+    outDefault.value = "";
+    outDefault.textContent = "Select outgoing player";
+    outSelect.appendChild(outDefault);
+
+    players.forEach(function(player) {
+        const option = document.createElement("option");
+        option.value = player.id;
+        option.textContent = "#" + player.jersey + " " + player.name +
+            " (" + player.position + ")";
+        outSelect.appendChild(option);
+    });
+
+    box.appendChild(outSelect);
+
+
+    /* =====================================
+       POSITION LABEL
+       ===================================== */
+
+    const positionLabel =
+        document.createElement("label");
+
+    positionLabel.textContent =
+        "Position for this match";
+
+    box.appendChild(positionLabel);
+
+    const positionInput =
+        document.createElement("input");
+
+    positionInput.type = "text";
+    positionInput.readOnly = true;
+    positionInput.placeholder = "Select Player OUT";
+    box.appendChild(positionInput);
+
+    /* =====================================
+       PLAYER IN LABEL
+       ===================================== */
+
+    const inLabel =
+        document.createElement("label");
+
+    inLabel.textContent =
+        "Player IN";
+
+    box.appendChild(inLabel);
+
+    const inNameInput =
+        document.createElement("input");
+
+    inNameInput.type = "text";
+    inNameInput.name = "player_in_name_" + substitutionCount;
+    inNameInput.placeholder = "Enter incoming player name";
+    inNameInput.required = true;
+    box.appendChild(inNameInput);
+
+    const jerseyLabel = document.createElement("label");
+    jerseyLabel.textContent = "Incoming player jersey number";
+    box.appendChild(jerseyLabel);
+
+    const jerseyInput = document.createElement("input");
+    jerseyInput.type = "number";
+    jerseyInput.name = "player_in_jersey_" + substitutionCount;
+    jerseyInput.min = "1";
+    jerseyInput.max = "99";
+    jerseyInput.required = true;
+    box.appendChild(jerseyInput);
+
+    outSelect.addEventListener("change", function() {
+        const selectedPlayer = players.find(function(player) {
+            return String(player.id) === String(outSelect.value);
+        });
+        positionInput.value = selectedPlayer ? selectedPlayer.position : "";
+    });
+
+
+    /* =====================================
+       MINUTE LABEL
+       ===================================== */
+
+    const minuteLabel =
+        document.createElement("label");
+
+
+    minuteLabel.textContent =
+        "Substitution Minute";
+
+
+    box.appendChild(
+        minuteLabel
+    );
+
+
+    /* =====================================
+       MINUTE INPUT
+       ===================================== */
+
+    const minuteInput =
+        document.createElement("input");
+
+
+    minuteInput.type =
+        "number";
+
+
+    minuteInput.name =
+        "substitution_minute_" +
+        substitutionCount;
+
+
+    minuteInput.min = "1";
+
+
+    minuteInput.max = "120";
+
+
+    minuteInput.placeholder =
+        "Example: 65";
+
+
+    box.appendChild(
+        minuteInput
+    );
+
+
+    /* =====================================
+       PLAYER OUT CHANGE
+       ===================================== */
+
+    outSelect.addEventListener(
+        "change",
+        function() {
+
+            const selectedId =
+                outSelect.value;
+
+
+            let selectedPlayer = null;
+
+
+            players.forEach(
+                function(player) {
+
+                    if (
+                        String(player.id) ===
+                        String(selectedId)
+                    ) {
+
+                        selectedPlayer =
+                            player;
+
+                    }
+
+                }
+            );
+
+
+            if (selectedPlayer) {
+
+                positionInput.value =
+                    selectedPlayer.position;
+
+            } else {
+
+                positionInput.value =
+                    "";
+
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       PLAYER IN CHANGE
+       ===================================== */
+
+    /* =====================================
+       ADD BOX
+       ===================================== */
+
+    container.appendChild(
+        box
+    );
+
+}
+
+
+/* =========================================
+   ADD BUTTON
+   ========================================= */
+
+document
+    .getElementById(
+        "addSubstitutionButton"
+    )
+    .addEventListener(
+        "click",
+        addSubstitution
+    );
+
+</script>
+
+
+</body>
+
+</html>

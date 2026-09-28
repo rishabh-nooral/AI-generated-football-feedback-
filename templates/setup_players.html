@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Setup Players</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>{{ team["team_name"] }}</h1>
+
+        <h2>Add Your 11 Players</h2>
+
+        <p>
+            Enter all 11 starting players.
+            Each position can be used only once.
+        </p>
+
+        <form
+            action="{{ url_for('save_players', team_id=team['team_id']) }}"
+            method="POST"
+            id="playersForm"
+        >
+
+            <div id="playersContainer">
+
+                {% for i in range(1, 12) %}
+
+                <div class="player-card">
+
+                    <h3>Player {{ i }}</h3>
+
+                    <label>
+                        Player Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="player_name_{{ i }}"
+                        placeholder="Enter player name"
+                        required
+                    >
+
+                    <label>
+                        Jersey Number
+                    </label>
+
+                    <input
+                        type="number"
+                        name="jersey_number_{{ i }}"
+                        min="1"
+                        max="99"
+                        placeholder="Jersey number"
+                        required
+                    >
+
+                    <label>
+                        Position
+                    </label>
+
+                    <select
+                        name="position_{{ i }}"
+                        class="position-select"
+                        required
+                    >
+
+                        <option value="">
+                            Select Position
+                        </option>
+
+                        {% for position in positions %}
+
+                        <option value="{{ position }}">
+                            {{ position }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <button type="submit">
+                Create Team & Save 11 Players
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+const positionSelects =
+    document.querySelectorAll(".position-select");
+
+function updatePositions() {
+
+    const selectedPositions = [];
+
+    positionSelects.forEach(select => {
+
+        if (select.value) {
+            selectedPositions.push(select.value);
+        }
+
+    });
+
+    positionSelects.forEach(select => {
+
+        const currentValue = select.value;
+
+        Array.from(select.options).forEach(option => {
+
+            if (option.value === "") {
+                return;
+            }
+
+            if (
+                selectedPositions.includes(option.value)
+                &&
+                option.value !== currentValue
+            ) {
+
+                option.disabled = true;
+
+            } else {
+
+                option.disabled = false;
+
+            }
+
+        });
+
+    });
+}
+
+
+positionSelects.forEach(select => {
+
+    select.addEventListener(
+        "change",
+        updatePositions
+    );
+
+});
+
+
+document
+    .getElementById("playersForm")
+    .addEventListener("submit", function(event) {
+
+        const selectedPositions =
+            Array.from(positionSelects)
+                .map(select => select.value);
+
+        const uniquePositions =
+            new Set(selectedPositions);
+
+        if (
+            selectedPositions.includes("")
+            ||
+            uniquePositions.size !== 11
+        ) {
+
+            event.preventDefault();
+
+            alert(
+                "Please select all 11 different football positions."
+            );
+
+            return;
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>

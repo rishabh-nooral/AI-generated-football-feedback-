@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Football Coach</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
+
+    <div class="card">
+
+        <h1>⚽ AI Football Coach</h1>
+
+        <p>
+            AI-powered player feedback and training plan generator.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         CREATE NEW TEAM
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>➕ Create New Team</h2>
+
+        <p>
+            Create a new team and add its 11 players.
+        </p>
+
+        <form
+            action="{{ url_for('create_team') }}"
+            method="POST"
+        >
+
+            <label for="team_name">
+                Team Name
+            </label>
+
+            <input
+                type="text"
+                id="team_name"
+                name="team_name"
+                placeholder="Enter team name"
+                required
+            >
+
+            <button type="submit">
+                Create Team
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =====================================================
+         EXISTING TEAMS
+         ===================================================== -->
+
+    <div class="card">
+
+        <h2>📋 Existing Teams</h2>
+
+        <p>
+            Continue working on a team you already created.
+        </p>
+
+
+        {% if teams %}
+
+            {% for team in teams %}
+
+                <div class="team-card">
+
+                    <h3>
+                        {{ team["team_name"] }}
+                    </h3>
+
+
+                    <p>
+                        <strong>Players:</strong>
+                        {{ team["player_count"] }} / 11
+                    </p>
+
+
+                    <p>
+                        <strong>Sessions:</strong>
+                        {{ team["session_count"] }}
+                    </p>
+
+
+                    <!-- =================================================
+                         TEAM ACTIONS
+                         ================================================= -->
+
+                    <div class="team-actions">
+
+                        <!-- OPEN TEAM -->
+
+                        <a
+                            href="{{ url_for(
+                                'team_dashboard',
+                                team_id=team['team_id']
+                            ) }}"
+                        >
+
+                            <button type="button">
+
+                                {% if team["player_count"] == 11 %}
+
+                                    Open Team
+
+                                {% else %}
+
+                                    Continue Team Setup
+
+                                {% endif %}
+
+                            </button>
+
+                        </a>
+
+
+                        <!-- DELETE ENTIRE TEAM -->
+
+                        <form
+                            action="{{ url_for(
+                                'delete_team',
+                                team_id=team['team_id']
+                            ) }}"
+                            method="POST"
+                            onsubmit="return confirm(
+                                'Are you sure you want to delete this entire team?\\n\\nThis will permanently delete the team, players, sessions, observations, match events, and all related data.'
+                            );"
+                            style="display: inline;"
+                        >
+
+                            <button
+                                type="submit"
+                                class="delete-button"
+                            >
+                                🗑 Delete Team
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <p>
+                    No existing teams yet.
+                </p>
+
+                <p>
+                    Create your first team above.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     PAGE STYLES
+     ========================================================= -->
+
+<style>
+
+.team-card {
+
+    margin-top: 20px;
+
+    padding: 20px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+}
+
+
+.team-actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    margin-top: 15px;
+}
+
+
+.delete-button {
+
+    background-color: #dc3545;
+
+    color: white;
+
+}
+
+
+.delete-button:hover {
+
+    background-color: #b02a37;
+
+}
+
+
+.empty-state {
+
+    padding: 20px;
+
+    text-align: center;
+
+}
+
+</style>
+
+
+</body>
+
+</html>

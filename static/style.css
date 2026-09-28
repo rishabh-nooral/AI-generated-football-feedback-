@@ -1,0 +1,1550 @@
+/* =========================================================
+   AI COACHING FEEDBACK - FOOTBALL
+
+   Premium Football + AI Dashboard UI
+
+   CSS ONLY - NO FUNCTIONALITY CHANGES
+   ========================================================= */
+
+
+/* =========================================================
+   GLOBAL RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    /* =====================================================
+       BOLD & BRIGHT FOOTBALL BACKGROUND
+       ===================================================== */
+
+    background-image: url("images/face.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    color: #1f2937;
+    margin: 0;
+    padding: 32px;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.user-logout-link {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 10;
+    padding: 10px 16px;
+    color: #fff;
+    background: #c62828;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.user-logout-link:hover {
+    background: #a61f1f;
+}
+
+.user-delete-account {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    z-index: 10;
+    margin: 0;
+}
+
+.user-delete-account button {
+    padding: 10px 16px;
+    color: #fff;
+    background: #b71c1c;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font: 700 13px Arial, sans-serif;
+    text-transform: uppercase;
+}
+
+.user-delete-account button:hover {
+    background: #8f1616;
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+   ========================================================= */
+
+.container {
+    max-width: 1180px;
+    margin: 0 auto;
+    position: relative;
+}
+
+
+/* =========================================================
+   PAGE TOP ACCENT
+   ========================================================= */
+
+.container::before {
+    content: "";
+    display: block;
+    height: 6px;
+    width: 110px;
+    margin: 0 auto 26px auto;
+    background: linear-gradient(
+        90deg,
+        #12372a,
+        #1f7a4d,
+        #2e8b57,
+        #7ac99a
+    );
+    border-radius: 50px;
+    box-shadow:
+        0 4px 12px rgba(31, 122, 77, 0.25);
+}
+
+
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #12372a;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.2;
+}
+
+h2 {
+    margin-top: 0;
+    color: #12372a;
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+h3 {
+    margin-top: 25px;
+    color: #12372a;
+    font-size: 20px;
+    font-weight: 750;
+}
+
+h4 {
+    color: #344054;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SUBTITLE
+   ========================================================= */
+
+.subtitle {
+    text-align: center;
+    color: #667085;
+    margin-bottom: 35px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.container > .card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.98),
+            rgba(247, 251, 249, 0.98)
+        );
+    border: 1px solid #d7e4dc;
+    border-radius: 22px;
+    padding: 32px;
+    box-shadow:
+        0 25px 60px rgba(18, 55, 42, 0.10),
+        0 5px 18px rgba(18, 55, 42, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.container > .card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(
+        90deg,
+        #12372a,
+        #1f7a4d,
+        #2e8b57,
+        #7ac99a
+    );
+}
+
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.section {
+    position: relative;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 30px;
+    margin-bottom: 26px;
+    border-radius: 18px;
+    border: 1px solid #dfe8e3;
+    box-shadow:
+        0 10px 30px rgba(18, 55, 42, 0.07),
+        0 2px 5px rgba(18, 55, 42, 0.03);
+    overflow: hidden;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.section::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        #12372a,
+        #1f7a4d,
+        #7ac99a,
+        transparent
+    );
+}
+
+.section:hover {
+    transform: translateY(-3px);
+    border-color: #bfd4c7;
+    box-shadow:
+        0 18px 40px rgba(18, 55, 42, 0.11);
+}
+
+
+/* =========================================================
+   GENERAL CARDS
+   ========================================================= */
+
+.card {
+    position: relative;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f7fbf9
+        );
+    border: 1px solid #dce7e1;
+    border-radius: 17px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow:
+        0 8px 22px rgba(18, 55, 42, 0.065);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: #bfd4c7;
+    box-shadow:
+        0 16px 34px rgba(18, 55, 42, 0.11);
+}
+
+
+/* =========================================================
+   PLAYER CARDS
+   ========================================================= */
+
+.player-card {
+    position: relative;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #f5faf7 100%
+        );
+    border: 1px solid #d8e5de;
+    border-radius: 17px;
+    padding: 23px;
+    margin-bottom: 17px;
+    box-shadow:
+        0 7px 18px rgba(18, 55, 42, 0.06);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.player-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 15px;
+    bottom: 15px;
+    width: 5px;
+    background: linear-gradient(
+        180deg,
+        #12372a,
+        #1f7a4d,
+        #7ac99a
+    );
+    border-radius: 0 8px 8px 0;
+}
+
+.player-card:hover {
+    transform: translateY(-4px);
+    border-color: #b9d0c2;
+    box-shadow:
+        0 15px 30px rgba(18, 55, 42, 0.11);
+}
+
+
+/* =========================================================
+   PLAYER CARD HEADINGS
+   ========================================================= */
+
+.player-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #12372a;
+    font-size: 20px;
+    font-weight: 800;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e1e9e4;
+}
+
+
+/* =========================================================
+   TEAM CARDS
+   ========================================================= */
+
+.team-card {
+    position: relative;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f4faf7
+        );
+    border: 1px solid #d7e4dc;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 17px;
+    box-shadow:
+        0 8px 20px rgba(18, 55, 42, 0.06);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.team-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+        90deg,
+        #12372a,
+        #1f7a4d,
+        #2e8b57
+    );
+}
+
+.team-card:hover {
+    transform: translateY(-4px);
+    border-color: #b9d0c2;
+    box-shadow:
+        0 16px 32px rgba(18, 55, 42, 0.11);
+}
+
+.team-card h2,
+.team-card h3 {
+    margin-top: 0;
+}
+
+
+/* =========================================================
+   TEAM ACTIONS
+   ========================================================= */
+
+.team-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+
+/* =========================================================
+   FEEDBACK CARDS
+   ========================================================= */
+
+.feedback-card,
+.team-summary-card {
+    position: relative;
+    margin-top: 22px;
+    padding: 28px;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #f4faf7 100%
+        );
+    border-radius: 18px;
+    border: 1px solid #d5e3db;
+    border-left: 6px solid #1f7a4d;
+    box-shadow:
+        0 10px 25px rgba(18, 55, 42, 0.075);
+    overflow: hidden;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.feedback-card::after,
+.team-summary-card::after {
+    content: "";
+    position: absolute;
+    right: -35px;
+    top: -35px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background:
+        radial-gradient(
+            circle,
+            rgba(31, 122, 77, 0.09),
+            rgba(31, 122, 77, 0.01)
+        );
+    pointer-events: none;
+}
+
+.feedback-card:hover,
+.team-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 16px 35px rgba(18, 55, 42, 0.12);
+}
+
+
+/* =========================================================
+   PLAYER FEEDBACK
+   ========================================================= */
+
+.player-feedback {
+    position: relative;
+    margin-top: 20px;
+    padding: 25px;
+    background:
+        linear-gradient(
+            145deg,
+            #f8fcfa,
+            #ffffff
+        );
+    border-radius: 16px;
+    border: 1px solid #d9e7df;
+    border-left: 6px solid #2e8b57;
+    box-shadow:
+        0 7px 18px rgba(18, 55, 42, 0.06);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.player-feedback:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 14px 28px rgba(18, 55, 42, 0.10);
+}
+
+.player-feedback h3 {
+    margin-top: 0;
+    color: #12372a;
+}
+
+
+/* =========================================================
+   FEEDBACK HEADINGS
+   ========================================================= */
+
+.feedback-card h3,
+.team-summary-card h3,
+.player-feedback h3 {
+    margin-top: 20px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #dfe7e2;
+    padding-bottom: 9px;
+    color: #12372a;
+}
+
+
+/* =========================================================
+   FEEDBACK TEXT
+   ========================================================= */
+
+.feedback-card br,
+.team-summary-card br,
+.player-feedback br {
+    line-height: 1.9;
+}
+
+.feedback-card pre,
+.team-summary-card pre,
+.player-feedback pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.8;
+    color: #344054;
+    background: transparent;
+}
+
+#message {
+    margin-top: 16px;
+    font-weight: 700;
+    color: #344054;
+}
+
+#team_summary {
+    line-height: 1.8;
+    color: #344054;
+}
+
+
+/* =========================================================
+   LABELS
+   ========================================================= */
+
+label {
+    display: block;
+    margin-top: 17px;
+    margin-bottom: 7px;
+    font-weight: 700;
+    color: #344054;
+    font-size: 14px;
+    letter-spacing: 0.1px;
+}
+
+
+/* =========================================================
+   INPUTS / SELECTS / TEXTAREAS
+   ========================================================= */
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #cbd8d1;
+    border-radius: 11px;
+    font-size: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #ffffff;
+    color: #1f2937;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: #91ad9d;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #1f7a4d;
+    box-shadow:
+        0 0 0 4px rgba(31, 122, 77, 0.10),
+        0 5px 14px rgba(31, 122, 77, 0.06);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #98a2b3;
+}
+
+
+/* =========================================================
+   BUTTONS
+   EXISTING COLORS PRESERVED
+   ========================================================= */
+
+button {
+    margin-top: 20px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(
+        135deg,
+        #1f7a4d,
+        #17613d
+    );
+    color: #ffffff;
+    box-shadow:
+        0 5px 12px rgba(18, 55, 42, 0.13);
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(
+        135deg,
+        #17613d,
+        #125333
+    );
+    transform: translateY(-2px);
+    box-shadow:
+        0 9px 20px rgba(18, 55, 42, 0.19);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow:
+        0 3px 7px rgba(18, 55, 42, 0.12);
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+    color: #1f7a4d;
+    text-decoration: none;
+    font-weight: 650;
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+a:hover {
+    color: #145c39;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   BACK LINKS
+   ========================================================= */
+
+a[href*="team"],
+a[href*="session"] {
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+/* =========================================================
+   AI FEEDBACK LINKS - BLUE
+   ========================================================= */
+
+a[href*="feedback"] {
+    color: #1570ef;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+a[href*="feedback"]:hover {
+    color: #175cd3;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   TEAM AI REPORT HISTORY - BLUE
+   ========================================================= */
+
+a[href*="team-summary-history"] {
+    color: #1570ef;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+a[href*="team-summary-history"]:hover {
+    color: #175cd3;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+   EXISTING COLOR PRESERVED
+   ========================================================= */
+
+.secondary-button {
+    background: linear-gradient(
+        135deg,
+        #475467,
+        #344054
+    );
+    color: #ffffff;
+}
+
+.secondary-button:hover {
+    background: linear-gradient(
+        135deg,
+        #344054,
+        #1f2937
+    );
+}
+
+
+/* =========================================================
+   DELETE BUTTON
+   EXISTING COLOR PRESERVED
+   ========================================================= */
+
+.delete-button {
+    background: linear-gradient(
+        135deg,
+        #d92d20,
+        #b42318
+    );
+    color: #ffffff;
+}
+
+.delete-button:hover {
+    background: linear-gradient(
+        135deg,
+        #b42318,
+        #912018
+    );
+}
+
+
+/* =========================================================
+   EDIT BUTTON
+   EXISTING COLOR PRESERVED
+   ========================================================= */
+
+.edit-button {
+    background: linear-gradient(
+        135deg,
+        #1570ef,
+        #175cd3
+    );
+    color: #ffffff;
+}
+
+.edit-button:hover {
+    background: linear-gradient(
+        135deg,
+        #175cd3,
+        #1047a0
+    );
+}
+
+
+/* =========================================================
+   SAVE TEAM OBSERVATION
+   EXISTING YELLOW COLOR PRESERVED
+   ========================================================= */
+
+#saveTeamObservationButton {
+    background: linear-gradient(
+        135deg,
+        #f5b800,
+        #e0a700
+    ) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 5px 13px rgba(245, 184, 0, 0.22);
+}
+
+#saveTeamObservationButton:hover {
+    background: linear-gradient(
+        135deg,
+        #d99f00,
+        #c48f00
+    ) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 8px 18px rgba(217, 159, 0, 0.27);
+}
+
+
+/* =========================================================
+   SAVE OBSERVATION
+   EXISTING YELLOW COLOR PRESERVED
+   ========================================================= */
+
+.save-observation-button {
+    background: linear-gradient(
+        135deg,
+        #f5b800,
+        #e0a700
+    ) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 5px 13px rgba(245, 184, 0, 0.22);
+}
+
+.save-observation-button:hover {
+    background: linear-gradient(
+        135deg,
+        #d99f00,
+        #c48f00
+    ) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 8px 18px rgba(217, 159, 0, 0.27);
+}
+
+
+/* =========================================================
+   AI GENERATION BUTTONS
+   EXISTING GREEN COLOR PRESERVED
+   ========================================================= */
+
+.generate-feedback-button,
+#generateTeamSummaryButton {
+    background: linear-gradient(
+        135deg,
+        #1f7a4d,
+        #17613d
+    );
+    color: #ffffff;
+}
+
+.generate-feedback-button:hover,
+#generateTeamSummaryButton:hover {
+    background: linear-gradient(
+        135deg,
+        #17613d,
+        #125333
+    );
+}
+
+
+/* =========================================================
+   ACTION AREAS
+   ========================================================= */
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.actions button {
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   BUTTON GROUP
+   ========================================================= */
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.button-group button {
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   DANGER ZONE
+   ========================================================= */
+
+.danger-zone {
+    margin-top: 30px;
+    padding: 22px;
+    border-radius: 16px;
+    border: 1px solid #fecdca;
+    background:
+        linear-gradient(
+            145deg,
+            #fff8f7,
+            #fef3f2
+        );
+    box-shadow:
+        0 6px 16px rgba(180, 35, 24, 0.05);
+}
+
+.danger-zone h3 {
+    margin-top: 0;
+    color: #b42318;
+}
+
+
+/* =========================================================
+   WARNING MESSAGE
+   ========================================================= */
+
+.warning-message {
+    margin: 18px 0;
+    padding: 15px 18px;
+    border-radius: 12px;
+    background:
+        linear-gradient(
+            135deg,
+            #fffaeb,
+            #fffdf5
+        );
+    border: 1px solid #fedf89;
+    color: #92400e;
+    font-weight: 600;
+    box-shadow:
+        0 5px 14px rgba(146, 64, 14, 0.06);
+}
+
+
+/* =========================================================
+   SUCCESS MESSAGE
+   ========================================================= */
+
+.success {
+    position: relative;
+    background:
+        linear-gradient(
+            135deg,
+            #ecfdf3,
+            #f5fff9
+        );
+    color: #027a48;
+    border: 1px solid #abefc6;
+    padding: 14px 16px;
+    border-radius: 11px;
+    margin-top: 16px;
+    font-weight: 600;
+    box-shadow:
+        0 4px 12px rgba(2, 122, 72, 0.06);
+}
+
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
+.error,
+.error-message {
+    position: relative;
+    background:
+        linear-gradient(
+            135deg,
+            #fef3f2,
+            #fff8f7
+        );
+    color: #b42318;
+    border: 1px solid #fecdca;
+    padding: 14px 16px;
+    border-radius: 11px;
+    margin-top: 16px;
+    font-weight: 600;
+    box-shadow:
+        0 4px 12px rgba(180, 35, 24, 0.05);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state,
+.empty {
+    text-align: center;
+    padding: 35px 20px;
+    color: #667085;
+    background:
+        linear-gradient(
+            145deg,
+            #f8faf9,
+            #ffffff
+        );
+    border: 1px dashed #cbd8d1;
+    border-radius: 16px;
+    margin-top: 15px;
+}
+
+
+/* =========================================================
+   OBSERVATION MESSAGES
+   ========================================================= */
+
+.observation-message,
+.feedback-message,
+#teamObservationMessage,
+#teamSummaryMessage {
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   TABLES
+   ========================================================= */
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 22px;
+    background: #ffffff;
+    border: 1px solid #dce6e0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+        0 7px 20px rgba(18, 55, 42, 0.055);
+}
+
+th {
+    background: linear-gradient(
+        135deg,
+        #12372a,
+        #1f5c43
+    );
+    color: #ffffff;
+    padding: 15px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #e7ece9;
+    color: #344054;
+    background: #ffffff;
+    transition:
+        background 0.15s ease;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background: #f2f9f5;
+}
+
+th:first-child {
+    border-top-left-radius: 12px;
+}
+
+th:last-child {
+    border-top-right-radius: 12px;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   LISTS
+   ========================================================= */
+
+ul,
+ol {
+    color: #344054;
+    line-height: 1.8;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+ul li::marker {
+    color: #1f7a4d;
+}
+
+ol li::marker {
+    color: #1f7a4d;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PRE / AI GENERATED TEXT
+   ========================================================= */
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   AI RESULT AREA
+   ========================================================= */
+
+.ai-feedback-result {
+    margin-top: 18px;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+#teamSummaryResult {
+    margin-top: 18px;
+    border-radius: 16px;
+}
+
+
+/* =========================================================
+   HORIZONTAL RULE
+   ========================================================= */
+
+hr {
+    border: none;
+    height: 1px;
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #d5e0da,
+            transparent
+        );
+    margin: 30px 0;
+}
+
+
+/* =========================================================
+   MATCH EVENTS
+   ========================================================= */
+
+#substitutionsContainer {
+    margin-top: 20px;
+}
+
+#substitutionsContainer .player-card {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8fbf9
+        );
+}
+
+#playerData {
+    display: none;
+}
+
+
+/* =========================================================
+   SESSION PLAYER AREA
+   ========================================================= */
+
+#sessionPage .player-card {
+    padding: 25px;
+}
+
+#sessionPage .player-card h3 {
+    color: #12372a;
+}
+
+
+/* =========================================================
+   SELECTION
+   ========================================================= */
+
+::selection {
+    background: rgba(31, 122, 77, 0.18);
+    color: #12372a;
+}
+
+.feedback-card ::selection,
+.team-summary-card ::selection,
+.player-feedback ::selection {
+    background: rgba(31, 122, 77, 0.18);
+}
+
+
+/* =========================================================
+   FOCUS ACCESSIBILITY
+   ========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(21, 112, 239, 0.25);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   DISABLED INPUTS / BUTTONS
+   ========================================================= */
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background: #f2f4f3;
+    color: #98a2b3;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   INLINE FORM HANDLING
+   ========================================================= */
+
+form[style*="display:inline"] {
+    display: inline !important;
+}
+
+
+/* =========================================================
+   SMOOTH UI
+   ========================================================= */
+
+button,
+input,
+select,
+textarea,
+a,
+.card,
+.player-card,
+.team-card,
+.section,
+.feedback-card,
+.team-summary-card,
+.player-feedback {
+    transition:
+        all 0.2s ease;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: #eef3f0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #a9beb2;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7f9f8c;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    body {
+        padding: 22px;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 31px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    .container > .card {
+        padding: 25px;
+    }
+
+    .section {
+        padding: 24px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .player-card {
+        padding: 19px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 14px;
+    }
+
+    h1 {
+        font-size: 27px;
+        line-height: 1.3;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+
+    .container::before {
+        width: 70px;
+        margin-bottom: 20px;
+    }
+
+    .container > .card {
+        padding: 19px;
+        border-radius: 17px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .section {
+        padding: 19px;
+        border-radius: 14px;
+    }
+
+    .card {
+        padding: 17px;
+        border-radius: 13px;
+    }
+
+    .player-card {
+        padding: 17px;
+        border-radius: 13px;
+    }
+
+    .team-card {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .feedback-card,
+    .team-summary-card,
+    .player-feedback {
+        padding: 18px;
+        border-radius: 13px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px 16px;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    .team-actions {
+        flex-direction: column;
+    }
+
+    .team-actions button {
+        width: 100%;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    th,
+    td {
+        padding: 11px 12px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE - SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 23px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    h3 {
+        font-size: 17px;
+    }
+
+    .container > .card {
+        padding: 15px;
+    }
+
+    .section {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .card,
+    .player-card {
+        padding: 14px;
+    }
+
+    .team-card {
+        padding: 15px;
+    }
+
+    .feedback-card,
+    .team-summary-card,
+    .player-feedback {
+        padding: 15px;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 14px;
+        padding: 11px 12px;
+    }
+
+    button {
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+
+/* =========================================================
+   END OF STYLE.CSS
+   ========================================================= */
+
+
+
+
+
+   /* =====================================================
+   VOICE / SPEAK OBSERVATION BUTTON
+   ===================================================== */
+
+.voice-button {
+    background: #7a4a2e;
+    color: #ffffff;
+    border: 1px solid #5c351f;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.voice-button:hover {
+    background: #63391f;
+}
+
+.voice-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

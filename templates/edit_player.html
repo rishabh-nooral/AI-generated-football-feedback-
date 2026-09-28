@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Edit Player</title>
+
+<link
+    rel="stylesheet"
+    href="/static/style.css"
+>
+
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+<div class="card">
+
+    <div id="loadingMessage">
+        Loading player...
+    </div>
+
+    <div id="errorMessage" hidden></div>
+
+    <div id="editContent" hidden>
+
+        <h1>Edit Player</h1>
+
+        <h2 id="teamName"></h2>
+
+        <p>
+            Update the player's information below.
+        </p>
+
+
+        <form
+            id="editPlayerForm"
+            method="POST"
+        >
+
+            <label for="playerName">
+                Player Name
+            </label>
+
+            <input
+                type="text"
+                id="playerName"
+                name="player_name"
+                required
+            >
+
+
+            <label for="jerseyNumber">
+                Jersey Number
+            </label>
+
+            <input
+                type="number"
+                id="jerseyNumber"
+                name="jersey_number"
+                min="1"
+                max="99"
+                required
+            >
+
+
+            <label for="position">
+                Position
+            </label>
+
+            <select
+                id="position"
+                name="position"
+                required
+            >
+
+                <option value="">
+                    Select Position
+                </option>
+
+            </select>
+
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+        </form>
+
+
+        <br>
+
+        <a id="backToTeam">
+            Back to Team
+        </a>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+const pathParts =
+    window.location.pathname
+        .split("/")
+        .filter(Boolean);
+
+
+const teamId =
+    pathParts[1];
+
+
+const playerId =
+    pathParts[3];
+
+
+const loadingMessage =
+    document.getElementById(
+        "loadingMessage"
+    );
+
+
+const errorMessage =
+    document.getElementById(
+        "errorMessage"
+    );
+
+
+const editContent =
+    document.getElementById(
+        "editContent"
+    );
+
+
+const teamName =
+    document.getElementById(
+        "teamName"
+    );
+
+
+const playerName =
+    document.getElementById(
+        "playerName"
+    );
+
+
+const jerseyNumber =
+    document.getElementById(
+        "jerseyNumber"
+    );
+
+
+const position =
+    document.getElementById(
+        "position"
+    );
+
+
+const form =
+    document.getElementById(
+        "editPlayerForm"
+    );
+
+
+const backToTeam =
+    document.getElementById(
+        "backToTeam"
+    );
+
+
+function showError(message) {
+
+    loadingMessage.hidden = true;
+
+    errorMessage.textContent =
+        message;
+
+    errorMessage.hidden = false;
+
+}
+
+
+async function loadPlayer() {
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/team/${teamId}/player/${playerId}/edit-data`
+            );
+
+
+        const contentType =
+            response.headers.get(
+                "content-type"
+            ) || "";
+
+
+        if (!contentType.includes("application/json")) {
+
+            throw new Error(
+                "Server returned an invalid response."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load player."
+            );
+
+        }
+
+
+        teamName.textContent =
+            data.team.team_name;
+
+
+        playerName.value =
+            data.player.player_name;
+
+
+        jerseyNumber.value =
+            data.player.jersey_number;
+
+
+        data.positions.forEach(
+            function(item) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    item;
+
+                option.textContent =
+                    item;
+
+                if (
+                    item ===
+                    data.player.position
+                ) {
+
+                    option.selected = true;
+
+                }
+
+                position.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        form.action =
+            `/team/${teamId}/player/${playerId}/edit`;
+
+
+        backToTeam.href =
+            `/team/${teamId}`;
+
+
+        loadingMessage.hidden = true;
+
+        editContent.hidden = false;
+
+
+    } catch (error) {
+
+        showError(
+            error.message
+        );
+
+    }
+
+}
+
+
+loadPlayer();
+
+</script>
+
+</body>
+
+</html>

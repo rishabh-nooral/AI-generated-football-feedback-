@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Session</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Create Session</h1>
+
+        <h2>{{ team["team_name"] }}</h2>
+
+        <p>
+            Create a training session or match.
+        </p>
+
+        {% if error %}
+
+        <div class="error-message">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'create_session',
+                team_id=team['team_id']
+            ) }}"
+        >
+
+            <label>
+                Session Date
+            </label>
+
+            <input
+                type="date"
+                name="session_date"
+                required
+            >
+
+
+            <label>
+                Session Type
+            </label>
+
+            <select
+                name="session_type"
+                id="session_type"
+                required
+            >
+
+                <option value="">
+                    Select Session Type
+                </option>
+
+                <option value="Training">
+                    Training
+                </option>
+
+                <option value="Match">
+                    Match
+                </option>
+
+            </select>
+
+
+            <div id="opponentBox">
+
+                <label>
+                    Opponent
+                </label>
+
+                <input
+                    type="text"
+                    name="opponent"
+                    id="opponent"
+                    placeholder="Enter opponent name"
+                >
+
+            </div>
+
+
+            <button type="submit">
+                Create Session
+            </button>
+
+        </form>
+
+
+        <br>
+
+        <a
+            href="{{ url_for(
+                'team_dashboard',
+                team_id=team['team_id']
+            ) }}"
+        >
+            Back to Team
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const sessionType =
+    document.getElementById("session_type");
+
+const opponentBox =
+    document.getElementById("opponentBox");
+
+const opponent =
+    document.getElementById("opponent");
+
+
+function updateOpponentField() {
+
+    if (sessionType.value === "Match") {
+
+        opponentBox.style.display = "block";
+
+        opponent.required = true;
+
+    } else {
+
+        opponentBox.style.display = "none";
+
+        opponent.required = false;
+
+        opponent.value = "";
+
+    }
+
+}
+
+
+sessionType.addEventListener(
+    "change",
+    updateOpponentField
+);
+
+
+updateOpponentField();
+
+</script>
+
+</body>
+
+</html>

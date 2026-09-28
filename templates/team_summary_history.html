@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Team Summary History</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 40px auto;
+            padding: 0 20px 40px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            margin-top: 7px;
+            color: #6b7280;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: #374151;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #1f2937;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(180px, 1fr)
+            );
+            gap: 15px;
+        }
+
+        .info-item strong {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+
+        /* =====================================================
+           HISTORY ACTIONS
+           ===================================================== */
+
+        .history-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .delete-history-btn {
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .delete-history-btn:hover {
+            background: #b91c1c;
+        }
+
+
+        .history-card {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 18px;
+            border-left: 5px solid #7c3aed;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .version {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .latest {
+            display: inline-block;
+            background: #7c3aed;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 5px 9px;
+            border-radius: 999px;
+            margin-left: 8px;
+        }
+
+        .date {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .summary {
+            line-height: 1.7;
+            white-space: pre-wrap;
+            color: #374151;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 10px;
+            padding: 45px 25px;
+            text-align: center;
+            color: #6b7280;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        @media (max-width: 650px) {
+
+            .topbar,
+            .history-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .history-actions {
+                justify-content: stretch;
+            }
+
+            .delete-history-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');" style="position: fixed; top: 20px; left: 24px; z-index: 10; margin: 0;">
+    <button type="submit" style="padding: 10px 16px; color: #fff; background: #b71c1c; border: 0; border-radius: 6px; cursor: pointer; font: 700 13px Arial, sans-serif; text-transform: uppercase;">Delete account</button>
+</form>
+<a
+    href="{{ url_for('logout') }}"
+    style="position: fixed; top: 20px; right: 24px; z-index: 10; padding: 10px 16px; color: #fff; background: #c62828; border-radius: 6px; font-size: 13px; font-weight: 700; text-decoration: none; text-transform: uppercase;"
+>Log out</a>
+
+<div class="container">
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <div class="topbar">
+
+        <div>
+
+            <h1>Team Summary History</h1>
+
+            <div class="subtitle">
+                Previous AI-generated team summary versions
+            </div>
+
+        </div>
+
+        <a
+            class="back-btn"
+            href="{{ url_for(
+                'session_details',
+                team_id=team['team_id'],
+                session_id=session['session_id']
+            ) }}"
+        >
+            Back to Session
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         SESSION INFORMATION
+         ===================================================== -->
+
+    <div class="info-card">
+
+        <div class="info-grid">
+
+            <div class="info-item">
+
+                <strong>Team</strong>
+
+                {{ team['team_name'] }}
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>Session Type</strong>
+
+                {{ session['session_type'] }}
+
+            </div>
+
+
+            <div class="info-item">
+
+                <strong>Date</strong>
+
+                {{ session['session_date'] }}
+
+            </div>
+
+
+            {% if session['opponent'] %}
+
+                <div class="info-item">
+
+                    <strong>Opponent</strong>
+
+                    {{ session['opponent'] }}
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             DELETE ENTIRE TEAM HISTORY
+             ================================================= -->
+
+        {% if history %}
+
+            <div class="history-actions">
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'delete_team_summary_history',
+                        team_id=team['team_id'],
+                        session_id=session['session_id']
+                    ) }}"
+                    onsubmit="return confirm(
+                        'Are you sure you want to delete the entire Team AI Summary history for this session?\\n\\nAll generated team summary versions will be permanently deleted. Team observations, player feedback, and match data will NOT be deleted.'
+                    );"
+                >
+
+                    <button
+                        type="submit"
+                        class="delete-history-btn"
+                    >
+                        Delete Entire History
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         TEAM SUMMARY HISTORY
+         ===================================================== -->
+
+    {% if history %}
+
+        {% for item in history %}
+
+            <div class="history-card">
+
+                <div class="history-header">
+
+                    <div class="version">
+
+                        Version {{ history|length - loop.index0 }}
+
+                        {% if loop.first %}
+
+                            <span class="latest">
+                                LATEST
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="date">
+
+                        {{ item['created_at'] }}
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary">
+
+                    {{ item['summary'] }}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>No Team Summary History Yet</h2>
+
+            <p>
+                Generate the Team AI Summary from this session
+                to create the first version.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

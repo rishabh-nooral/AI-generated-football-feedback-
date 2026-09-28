@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Observation History</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<form class="user-delete-account" method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');">
+    <button type="submit">Delete account</button>
+</form>
+<a class="user-logout-link" href="{{ url_for('logout') }}">Log out</a>
+
+<main class="container">
+    <section class="card">
+        <h1>Player Observation History</h1>
+        <h2 id="playerName">Loading...</h2>
+        <p>
+            <strong>Position:</strong>
+            <span id="playerPosition">Loading...</span>
+        </p>
+        <p>
+            <strong>Session:</strong>
+            <span id="sessionInfo">Loading...</span>
+        </p>
+
+        <hr>
+
+        <div id="message"></div>
+
+        <section id="currentSection" hidden>
+            <h2>Current Observation</h2>
+            <div class="observation-history-item">
+                <p class="observation-history-date" id="currentDate"></p>
+                <p class="observation-history-text" id="currentObservation"></p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Previous Observations</h2>
+            <div id="historyContainer"></div>
+        </section>
+
+        <br>
+        <a id="backLink" href="#" class="history-button">Back to Session</a>
+    </section>
+</main>
+
+<script>
+(function () {
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const teamIndex = parts.indexOf("team");
+
+    if (teamIndex === -1 || !parts[teamIndex + 1] || !parts[teamIndex + 3] || !parts[teamIndex + 5]) {
+        document.body.innerHTML = "<main class='container'><section class='card'><h2>Invalid history URL.</h2></section></main>";
+        return;
+    }
+
+    const teamId = Number(parts[teamIndex + 1]);
+    const sessionId = Number(parts[teamIndex + 3]);
+    const playerId = Number(parts[teamIndex + 5]);
+
+    const apiUrl = "/team/" + teamId + "/session/" + sessionId + "/player/" + playerId + "/observation-history";
+    const detailsUrl = "/api/team/" + teamId + "/session/" + sessionId + "/details";
+    const backUrl = "/team/" + teamId + "/session/" + sessionId;
+
+    const playerName = document.getElementById("playerName");
+    const playerPosition = document.getElementById("playerPosition");
+    const sessionInfo = document.getElementById("sessionInfo");
+    const message = document.getElementById("message");
+    const currentSection = document.getElementById("currentSection");
+    const currentObservation = document.getElementById("currentObservation");
+    const currentDate = document.getElementById("currentDate");
+    const historyContainer = document.getElementById("historyContainer");
+    const backLink = document.getElementById("backLink");
+
+    backLink.href = backUrl;
+
+    function formatDateTime(value) {
+        if (!value) return "";
+        const date = new Date(String(value).replace(" ", "T"));
+        if (Number.isNaN(date.getTime())) return String(value);
+        return date.toLocaleString();
+    }
+
+    async function loadPage() {
+        try {
+            const detailsResponse = await fetch(detailsUrl);
+            const details = await detailsResponse.json();
+
+            if (!detailsResponse.ok || !details.success) {
+                throw new Error(details.message || "Could not load session details.");
+            }
+
+            const player = details.players.find(function (item) {
+                return Number(item.player_id) === playerId;
+            });
+
+            if (player) {
+                playerName.textContent = "#" + player.jersey_number + " " + player.player_name;
+                playerPosition.textContent = player.position;
+            }
+
+            sessionInfo.textContent = details.session.session_type + " - " + details.session.session_date;
+            if (details.session.opponent) {
+                sessionInfo.textContent += " vs " + details.session.opponent;
+            }
+
+            const response = await fetch(apiUrl);
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Could not load player observation history.");
+            }
+
+            message.innerHTML = "";
+
+            if (result.current_observation) {
+                currentSection.hidden = false;
+                currentObservation.textContent = result.current_observation;
+                currentDate.textContent = "Current • Saved: " + formatDateTime(result.current_created_at);
+            } else {
+                currentSection.hidden = true;
+            }
+
+            historyContainer.innerHTML = "";
+
+            if (!result.history || result.history.length === 0) {
+                const empty = document.createElement("p");
+                empty.textContent = result.current_observation
+                    ? "No previous observations have been saved for this player yet."
+                    : "No observations have been saved for this player yet.";
+                historyContainer.appendChild(empty);
+                return;
+            }
+
+            result.history.forEach(function (item) {
+                const wrapper = document.createElement("div");
+                wrapper.className = "observation-history-item";
+
+                const date = document.createElement("p");
+                date.className = "observation-history-date";
+                date.textContent = "Previous • Saved: " + formatDateTime(item.created_at);
+
+                const text = document.createElement("p");
+                text.className = "observation-history-text";
+                text.textContent = item.observation;
+
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "delete-button";
+                deleteButton.textContent = "Delete This Observation";
+                deleteButton.addEventListener("click", async function () {
+                    if (!window.confirm("Delete this previous player observation?")) return;
+
+                    deleteButton.disabled = true;
+
+                    try {
+                        const deleteResponse = await fetch(apiUrl + "/" + item.history_id, {
+                            method: "DELETE"
+                        });
+                        const deleteResult = await deleteResponse.json();
+
+                        if (!deleteResponse.ok || !deleteResult.success) {
+                            throw new Error(deleteResult.message || "Could not delete observation.");
+                        }
+
+                        await loadPage();
+                    } catch (error) {
+                        message.textContent = error.message;
+                        deleteButton.disabled = false;
+                    }
+                });
+
+                wrapper.appendChild(date);
+                wrapper.appendChild(text);
+                wrapper.appendChild(deleteButton);
+                historyContainer.appendChild(wrapper);
+            });
+        } catch (error) {
+            message.textContent = error.message;
+        }
+    }
+
+    loadPage();
+})();
+</script>
+
+</body>
+</html>

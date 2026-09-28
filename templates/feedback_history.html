@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Feedback History</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .back-button {
+            text-decoration: none;
+            background: #374151;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background: #1f2937;
+        }
+
+        .header-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .header-card h1 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .player-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: #eef2ff;
+            padding: 8px 13px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           HISTORY ACTIONS
+           ===================================================== */
+
+        .history-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .delete-history-button {
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .delete-history-button:hover {
+            background: #b91c1c;
+        }
+
+        .history-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            border-left: 5px solid #9ca3af;
+        }
+
+        .history-card.latest {
+            border-left: 5px solid #2563eb;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .version {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .latest-badge {
+            background: #2563eb;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .date {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .feedback-text {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 18px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-size: 15px;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            color: #6b7280;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                margin: 20px auto;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .back-button {
+                text-align: center;
+            }
+
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .history-actions {
+                justify-content: stretch;
+            }
+
+            .delete-history-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Warning: deleting your account will permanently remove your access. Your account will be kept as a passive user for admin history. Continue?');" style="position: fixed; top: 20px; left: 24px; z-index: 10; margin: 0;">
+    <button type="submit" style="padding: 10px 16px; color: #fff; background: #b71c1c; border: 0; border-radius: 6px; cursor: pointer; font: 700 13px Arial, sans-serif; text-transform: uppercase;">Delete account</button>
+</form>
+<a
+    href="{{ url_for('logout') }}"
+    style="position: fixed; top: 20px; right: 24px; z-index: 10; padding: 10px 16px; color: #fff; background: #c62828; border-radius: 6px; font-size: 13px; font-weight: 700; text-decoration: none; text-transform: uppercase;"
+>Log out</a>
+
+<div class="container">
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <div class="top-bar">
+
+        <h1>AI Feedback History</h1>
+
+        <a
+            href="{{ url_for(
+                'session_details',
+                team_id=team['team_id'],
+                session_id=session['session_id']
+            ) }}"
+            class="back-button"
+        >
+            ← Back to Session
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         PLAYER INFORMATION
+         ===================================================== -->
+
+    <div class="header-card">
+
+        <h1>{{ player['player_name'] }}</h1>
+
+        <p>
+            Previous AI-generated feedback versions for this player.
+        </p>
+
+        <div class="player-info">
+
+            <div class="info-item">
+                Position:
+                <strong>{{ player['position'] }}</strong>
+            </div>
+
+            <div class="info-item">
+                Team:
+                <strong>{{ team['team_name'] }}</strong>
+            </div>
+
+            <div class="info-item">
+                Session:
+                <strong>{{ session['session_type'] }}</strong>
+            </div>
+
+            <div class="info-item">
+                Date:
+                <strong>{{ session['session_date'] }}</strong>
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DELETE ENTIRE HISTORY
+             ================================================= -->
+
+        {% if history %}
+
+            <div class="history-actions">
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'delete_feedback_history',
+                        team_id=team['team_id'],
+                        session_id=session['session_id'],
+                        player_id=player['player_id']
+                    ) }}"
+                    onsubmit="return confirm(
+                        'Are you sure you want to delete the entire AI feedback history for this player?\\n\\nAll generated AI feedback versions will be permanently deleted. Coach observations and match statistics will NOT be deleted.'
+                    );"
+                >
+
+                    <button
+                        type="submit"
+                        class="delete-history-button"
+                    >
+                        Delete Entire History
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         FEEDBACK HISTORY
+         ===================================================== -->
+
+    {% if history %}
+
+        {% for item in history %}
+
+            <div
+                class="history-card {% if loop.first %}latest{% endif %}"
+            >
+
+                <div class="history-header">
+
+                    <div class="version">
+                        Version {{ history|length - loop.index0 }}
+                    </div>
+
+                    {% if loop.first %}
+
+                        <span class="latest-badge">
+                            LATEST
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="date">
+
+                    Generated on:
+                    {{ item['created_at'] }}
+
+                </div>
+
+
+                <div class="feedback-text">
+
+                    {{ item['feedback'] }}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>No Feedback History</h2>
+
+            <p>
+                No AI feedback has been generated for this player
+                in this session yet.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

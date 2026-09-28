@@ -1,0 +1,337 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --ink: #17251f;
+    --muted: #64736c;
+    --line: rgba(23, 37, 31, 0.14);
+    --paper: rgba(251, 252, 246, 0.92);
+    --accent: #d96c3b;
+    --accent-dark: #9f4024;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 42px 24px;
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    background: linear-gradient(rgba(18, 31, 26, 0.58), rgba(18, 31, 26, 0.58)), url("images/foot.jpg") center / cover fixed;
+}
+
+.admin-shell {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+}
+
+.admin-header,
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.admin-header {
+    color: #fff;
+    margin-bottom: 34px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font: 700 0.72rem/1.2 Arial, sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.admin-header .eyebrow {
+    color: #ffc39f;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 8px;
+    font-size: clamp(2.2rem, 5vw, 4.5rem);
+    line-height: 0.98;
+    font-weight: 400;
+}
+
+h2 {
+    margin-bottom: 0;
+    font-size: 2rem;
+    font-weight: 400;
+}
+
+.subtitle {
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.78);
+    font: 0.96rem Arial, sans-serif;
+}
+
+.logout-link {
+    padding: 10px 0;
+    color: #fff;
+    font: 700 0.78rem Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--accent);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 30px;
+}
+
+.metric-card,
+.teams-section {
+    background: var(--paper);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+
+.metric-card {
+    min-height: 142px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.metric-card span {
+    color: var(--muted);
+    font: 700 0.75rem Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.metric-card strong {
+    color: var(--accent-dark);
+    font-size: 3.2rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.teams-section {
+    padding: 28px;
+}
+
+.section-heading {
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.live-status {
+    color: var(--muted);
+    font: 700 0.72rem Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.live-status i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: #4b9d6a;
+    box-shadow: 0 0 0 4px rgba(75, 157, 106, 0.14);
+}
+
+.teams-list {
+    display: grid;
+    gap: 0;
+}
+
+.team-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 1.2rem;
+}
+
+.user-row {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 160ms ease, padding-left 160ms ease;
+}
+
+.user-row:hover {
+    padding-left: 8px;
+    color: var(--accent-dark);
+}
+
+.user-status {
+    margin-left: 8px;
+    color: var(--accent-dark);
+    font: 700 0.68rem Arial, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.team-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.team-row strong {
+    color: var(--muted);
+    font: 700 0.8rem Arial, sans-serif;
+    letter-spacing: 0.04em;
+}
+
+.empty-state {
+    margin: 24px 0 0;
+    color: var(--muted);
+    font-family: Arial, sans-serif;
+}
+
+.danger-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+    padding: 24px 28px;
+    color: #fff;
+    background: rgba(72, 27, 18, 0.86);
+    border: 1px solid rgba(255, 195, 159, 0.45);
+}
+
+.danger-section h2 {
+    margin-bottom: 8px;
+}
+
+.danger-section p:not(.eyebrow) {
+    max-width: 650px;
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.78);
+    font: 0.92rem/1.5 Arial, sans-serif;
+}
+
+.danger-button {
+    padding: 12px 16px;
+    color: #481b12;
+    background: #ffc39f;
+    border: 0;
+    cursor: pointer;
+    font: 700 0.76rem Arial, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 22px;
+    color: #ffc39f;
+    font: 700 0.76rem Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.user-teams {
+    display: grid;
+    gap: 18px;
+    padding-top: 22px;
+}
+
+.user-team-card {
+    padding: 20px;
+    border: 1px solid var(--line);
+}
+
+.team-card-heading,
+.team-stats,
+.session-type {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.team-card-heading h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+}
+
+.team-card-heading span,
+.team-stats,
+.session-type {
+    color: var(--muted);
+    font: 0.78rem Arial, sans-serif;
+}
+
+.team-stats {
+    justify-content: flex-start;
+    gap: 24px;
+    margin: 16px 0;
+}
+
+.team-stats strong {
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+
+.session-breakdown {
+    display: grid;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
+.session-type {
+    padding: 6px 0;
+}
+
+@media (max-width: 760px) {
+    body {
+        padding: 26px 16px;
+    }
+
+    .admin-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .metric-card {
+        min-height: 126px;
+        padding: 18px;
+    }
+
+    .metric-card strong {
+        font-size: 2.5rem;
+    }
+
+    .teams-section {
+        padding: 22px 18px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .danger-section {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

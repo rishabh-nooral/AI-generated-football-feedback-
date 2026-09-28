@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Football Coach</title>
+    <link rel="stylesheet" href="/static/auth.css">
+</head>
+<body>
+    <main class="auth-page">
+        <section class="auth-card">
+            <div class="football-icon">⚽</div>
+            <h1>Welcome Back</h1>
+            <p class="auth-subtitle">Login to continue to AI Football Coach.</p>
+
+            <div id="message" class="auth-message" hidden></div>
+
+            <form action="/login" method="POST" class="auth-form">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter username"
+                    autocomplete="username"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" class="auth-button primary">Login</button>
+            </form>
+
+            <p class="auth-switch">
+                New user?
+                <a href="/register">Create an account</a>
+            </p>
+
+            <a class="back-link" href="/">← Back to landing</a>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const message = document.getElementById("message");
+
+        if (params.get("error")) {
+            message.textContent = params.get("error");
+            message.className = "auth-message error";
+            message.hidden = false;
+        } else if (params.get("registered") === "1") {
+            message.textContent = "Registration successful. Please login.";
+            message.className = "auth-message success";
+            message.hidden = false;
+        }
+    </script>
+</body>
+</html>
